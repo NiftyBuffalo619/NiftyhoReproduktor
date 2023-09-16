@@ -1,5 +1,9 @@
 package wannabeNifty.NiftyhoReproduktor;
 
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
+import net.dv8tion.jda.api.events.interaction.ModalInteractionEvent;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.components.ActionRow;
@@ -16,6 +20,7 @@ public class CommandListener extends ListenerAdapter {
                 .setPlaceholder("Some Music you want to play")
                 .setMinLength(4)
                 .setMaxLength(30)
+                .setRequired(true)
                 .build();
         Modal modal = Modal.create("musicmodal", "Music")
                 .addActionRows(ActionRow.of(musicName))
@@ -23,7 +28,19 @@ public class CommandListener extends ListenerAdapter {
 
         switch (event.getName()) {
             case "play":
-                    event.replyModal(modal);
+                    event.replyModal(modal).queue();
+                break;
+        }
+    }
+}
+class ModalListener extends ListenerAdapter {
+    @Override
+    public void onModalInteraction(@NotNull ModalInteractionEvent event) {
+        switch (event.getModalId()) {
+            case "musicmodal":
+                    String MusicName = event.getValue("musicname").getAsString();
+                // The Music name won't be null because the field is required
+                    event.reply("Searching for " + MusicName).queue();
                 break;
         }
     }
